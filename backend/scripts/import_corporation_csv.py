@@ -125,7 +125,7 @@ def import_financials_from_csv(csv_file_path: str):
             def safe_int(val):
                 try:
                     return int(float(val.strip())) if val.strip() else None
-                except:
+                except (ValueError, AttributeError):
                     return None
 
             if existing:
