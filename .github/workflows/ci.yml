@@ -10,6 +10,6 @@ jobs:
     uses: flipslidersand-labs/qa-workflows/.github/workflows/python-test.yml@main
     with:
       working-directory: "backend"
-      install-command: "pip install -r requirements.txt"
+      install-command: "pip install -r requirements.txt pytest-cov"
       coverage-threshold: 30
       run-lint: false
