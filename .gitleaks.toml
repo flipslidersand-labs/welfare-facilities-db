@@ -1,0 +1,7 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "docs/TESTING.md の curl 例にある your-... 形式のプレースホルダAPIキー(実鍵ではない)"
+targetRules = ["curl-auth-header"]
+paths = ['''^docs/TESTING\.md$''']
