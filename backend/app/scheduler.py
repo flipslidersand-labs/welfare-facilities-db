@@ -35,7 +35,7 @@ def notify_slack(message: str):
             timeout=5
         )
     except Exception as e:
-        print(f"⚠️  Slack notification failed: {e}")
+        logger.warning("slack_notification_failed", extra={"error": str(e)})
 
 
 def log_collection(script_name: str, status: str, records: int = 0, error_msg: str = None):
@@ -68,7 +68,7 @@ def run_facility_import():
     if not csv_path or not os.path.exists(csv_path):
         error_msg = f"FACILITY_CSV_PATH not set or file not found: {csv_path}"
         log_collection(script_name, "skipped", error_msg=error_msg)
-        print(f"⏭️  {error_msg}")
+        logger.info("scheduler_job_skipped", extra={"reason": error_msg})
         return
 
     # Execute with retry logic
@@ -94,7 +94,7 @@ def run_facility_import():
 
                 log_collection(script_name, "success", records=records)
                 notify_slack(f"✅ Facility import succeeded: {records} records processed")
-                print(f"✓ Facility import completed: {records} records")
+                logger.info("facility_import_completed", extra={"records": records})
                 return
             else:
                 raise Exception(f"Script failed: {result.stderr}")
@@ -102,12 +102,12 @@ def run_facility_import():
         except Exception as e:
             error_msg = str(e)
             if attempt < max_retries - 1:
-                print(f"⚠️  Facility import attempt {attempt + 1} failed, retrying: {error_msg}")
+                logger.warning("facility_import_retry", extra={"attempt": attempt + 1, "error": error_msg})
                 continue
             else:
                 log_collection(script_name, "failed", error_msg=error_msg)
                 notify_slack(f"❌ Facility import failed after {max_retries} retries:\n{error_msg}")
-                print(f"❌ Facility import failed: {error_msg}")
+                logger.error("facility_import_failed", extra={"error": error_msg})
                 return
 
 
@@ -132,13 +132,13 @@ def run_daily_backup():
         if deleted:
             msg += f"\nDeleted {len(deleted)} old backups"
         notify_slack(f"✅ {msg}")
-        print(f"✓ {msg}")
+        logger.info("db_backup_completed", extra={"detail": msg})
 
     except Exception as e:
         error_msg = str(e)
         log_collection(script_name, "failed", error_msg=error_msg)
         notify_slack(f"❌ DB backup failed:\n{error_msg}")
-        print(f"❌ DB backup failed: {error_msg}")
+        logger.error("db_backup_failed", extra={"error": error_msg})
 
 
 def run_financial_import():
@@ -153,7 +153,7 @@ def run_financial_import():
     if not csv_path or not os.path.exists(csv_path):
         error_msg = f"FINANCIAL_CSV_PATH not set or file not found: {csv_path}"
         log_collection(script_name, "skipped", error_msg=error_msg)
-        print(f"⏭️  {error_msg}")
+        logger.info("scheduler_job_skipped", extra={"reason": error_msg})
         return
 
     # Execute with retry logic
@@ -179,7 +179,7 @@ def run_financial_import():
 
                 log_collection(script_name, "success", records=records)
                 notify_slack(f"✅ Financial import succeeded: {records} records processed")
-                print(f"✓ Financial import completed: {records} records")
+                logger.info("financial_import_completed", extra={"records": records})
                 return
             else:
                 raise Exception(f"Script failed: {result.stderr}")
@@ -187,12 +187,12 @@ def run_financial_import():
         except Exception as e:
             error_msg = str(e)
             if attempt < max_retries - 1:
-                print(f"⚠️  Financial import attempt {attempt + 1} failed, retrying: {error_msg}")
+                logger.warning("financial_import_retry", extra={"attempt": attempt + 1, "error": error_msg})
                 continue
             else:
                 log_collection(script_name, "failed", error_msg=error_msg)
                 notify_slack(f"❌ Financial import failed after {max_retries} retries:\n{error_msg}")
-                print(f"❌ Financial import failed: {error_msg}")
+                logger.error("financial_import_failed", extra={"error": error_msg})
                 return
 
 
@@ -248,11 +248,11 @@ def start_scheduler():
     if not scheduler.running:
         init_scheduler()
         scheduler.start()
-        print("✓ Scheduler started")
+        logger.info("scheduler_started")
 
 
 def stop_scheduler():
     """Stop background scheduler"""
     if scheduler.running:
         scheduler.shutdown(wait=False)
-        print("✓ Scheduler stopped")
+        logger.info("scheduler_stopped")
