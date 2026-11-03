@@ -80,7 +80,7 @@ class Verifier:
             try:
                 response = requests.get(f"http://localhost:{port}", timeout=2)
                 self.check_pass(f"Port {port} ({name}) is accessible")
-            except:
+            except requests.RequestException:
                 self.check_warn(f"Port {port} ({name}) is not accessible")
     
     def verify_health_checks(self):
@@ -94,7 +94,7 @@ class Verifier:
                 self.check_pass("Backend API health check")
             else:
                 self.check_fail("Backend API health check failed")
-        except:
+        except requests.RequestException:
             self.check_fail("Backend API health check - connection failed")
         
         # PostgreSQL health check
@@ -123,7 +123,7 @@ class Verifier:
                     self.check_warn(f"GET {endpoint} returned {response.status_code}")
             except requests.ConnectionError:
                 self.check_fail(f"GET {endpoint} - connection failed")
-            except:
+            except requests.RequestException:
                 self.check_warn(f"GET {endpoint} - request failed")
     
     def verify_configuration(self):
