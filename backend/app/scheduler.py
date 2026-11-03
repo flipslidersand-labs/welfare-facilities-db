@@ -89,7 +89,7 @@ def run_facility_import():
                     if "Imported" in line:
                         try:
                             records = int(line.split()[1])
-                        except:
+                        except (ValueError, IndexError):
                             pass
 
                 log_collection(script_name, "success", records=records)
@@ -174,7 +174,7 @@ def run_financial_import():
                     if "Imported" in line or "processed" in line:
                         try:
                             records = int(line.split()[1])
-                        except:
+                        except (ValueError, IndexError):
                             pass
 
                 log_collection(script_name, "success", records=records)

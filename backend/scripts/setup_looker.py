@@ -25,7 +25,8 @@ def create_looker_user(host: str, database: str, user: str, password: str, looke
         try:
             cur.execute("DROP USER IF EXISTS looker_viewer")
             conn.commit()
-        except:
+        except Exception as e:
+            print(f"Warning: DROP USER IF EXISTS failed (continuing): {e}", file=sys.stderr)
             conn.rollback()
 
         # Create user

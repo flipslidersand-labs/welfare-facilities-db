@@ -63,7 +63,7 @@ cors_origins = os.getenv("CORS_ORIGINS", '["http://localhost:5173", "http://loca
 try:
     import json
     origins = json.loads(cors_origins)
-except:
+except (json.JSONDecodeError, ValueError):
     origins = ["http://localhost:5173", "http://localhost:3000"]
 
 # Request logging middleware
