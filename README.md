@@ -1,5 +1,7 @@
 # Welfare Facilities DB
 
+Release type: `service`
+
 > **Status**: Active (moving to production) — 2026-08-01
 > A roadmap addressing 4 critical items (data import, API authentication, credentials, deployment) has been established for the production rollout.
 >
